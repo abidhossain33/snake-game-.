@@ -1,366 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Snake Game</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: #1a1a2e;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    min-height: 100vh; font-family: Arial, sans-serif;
-    color: white; user-select: none; -webkit-user-select: none;
-  }
-  h1 { font-size: 1.6rem; color: #00ff88; margin-bottom: 6px; letter-spacing: 4px; }
-  .score-row { display: flex; gap: 20px; margin-bottom: 8px; }
-  .score-box { text-align: center; background: #0f0f1a; padding: 4px 14px; border-radius: 8px; border: 1px solid #333; }
-  .score-box .label { font-size: 0.5rem; color: #666; letter-spacing: 2px; }
-  .score-box .val { font-size: 1.1rem; font-weight: bold; color: #00ff88; }
-
-  .canvas-wrap {
-    position: relative;
-    border: 3px solid #00ff88; border-radius: 6px;
-    box-shadow: 0 0 20px rgba(0,255,136,0.3);
-    display: inline-block;
-  }
-  canvas { display: block; border-radius: 4px; }
-
-  .overlay {
-    position: absolute; inset: 0;
-    background: rgba(0,0,0,0.85);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    border-radius: 4px; gap: 10px; z-index: 10;
-  }
-  .overlay h2 { font-size: 1.4rem; color: #00ff88; }
-  .overlay p { font-size: 0.72rem; color: #ccc; text-align: center; line-height: 1.9; }
-  .overlay .final { font-size: 0.9rem; color: #fff; }
-  .overlay .final span { color: #00ff88; font-weight: bold; }
-
-  .play-btn {
-    background: #00ff88; color: #1a1a2e;
-    border: none; padding: 11px 28px;
-    font-size: 0.95rem; font-weight: bold;
-    border-radius: 8px; cursor: pointer;
-    letter-spacing: 2px; margin-top: 4px;
-    -webkit-tap-highlight-color: transparent; z-index: 11;
-  }
-  .play-btn:active { opacity: 0.8; }
-
-  /* D-Pad inside canvas bottom-right */
-  .dpad {
-    position: absolute; bottom: 10px; right: 10px;
-    display: grid;
-    grid-template-columns: repeat(3, 42px);
-    grid-template-rows: repeat(2, 42px);
-    gap: 4px; z-index: 5;
-  }
-  .dpad button {
-    background: rgba(15,15,26,0.8);
-    border: 1.5px solid rgba(0,255,136,0.45);
-    color: rgba(0,255,136,0.8);
-    font-size: 1.1rem; border-radius: 8px;
-    cursor: pointer; outline: none;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .dpad button:active, .dpad button.flash {
-    background: rgba(0,255,136,0.9);
-    color: #1a1a2e; border-color: #00ff88;
-  }
-  .dpad .up    { grid-column: 2; grid-row: 1; }
-  .dpad .left  { grid-column: 1; grid-row: 2; }
-  .dpad .down  { grid-column: 2; grid-row: 2; }
-  .dpad .right { grid-column: 3; grid-row: 2; }
-
-  .dl-btn {
-    margin-top: 10px;
-    background: transparent;
-    border: 1.5px solid #00ff88;
-    color: #00ff88;
-    padding: 8px 22px;
-    font-size: 0.78rem;
-    border-radius: 8px;
-    cursor: pointer;
-    letter-spacing: 1px;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .dl-btn:active { background: #00ff88; color: #1a1a2e; }
-
-  /* Splash screen */
-  #splash {
-    position: fixed; inset: 0;
-    background: #0a0a1a;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    z-index: 100;
-    gap: 0;
-  }
-
-  .splash-snake {
-    font-size: 5rem;
-    animation: bounce 1.2s ease-in-out infinite;
-  }
-
-  @keyframes bounce {
-    0%,100% { transform: translateY(0); }
-    50% { transform: translateY(-16px); }
-  }
-
-  .splash-title {
-    font-size: 2.8rem;
-    font-weight: bold;
-    color: #00ff88;
-    letter-spacing: 8px;
-    margin-top: 10px;
-    text-shadow: 0 0 20px rgba(0,255,136,0.6);
-  }
-
-  .splash-line {
-    width: 80px; height: 2px;
-    background: linear-gradient(to right, transparent, #00ff88, transparent);
-    margin: 18px 0;
-  }
-
-  .splash-made {
-    font-size: 0.7rem;
-    color: #555;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-
-  .splash-name {
-    font-size: 1.3rem;
-    font-weight: bold;
-    color: #00ff88;
-    letter-spacing: 2px;
-    text-shadow: 0 0 12px rgba(0,255,136,0.4);
-  }
-
-  .splash-tap {
-    margin-top: 40px;
-    font-size: 0.68rem;
-    color: #444;
-    letter-spacing: 3px;
-    animation: blink 1.2s step-end infinite;
-  }
-
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-
-  .splash-out {
-    animation: fadeOut 0.5s ease forwards;
-  }
-
-  @keyframes fadeOut {
-    to { opacity: 0; pointer-events: none; }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ভবিষ্যতের স্মার্ট স্কুল</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #050b18; }
+        .hero-section {
+            background: linear-gradient(to bottom, rgba(5, 11, 24, 0.7), #050b18),
+                        url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .neon-text { text-shadow: 0 0 10px #60a5fa, 0 0 20px #60a5fa; }
+    </style>
 </head>
-<body>
+<body class="text-gray-200">
 
-<!-- Splash Screen -->
-<div id="splash">
-  <div class="splash-snake">🐍</div>
-  <div class="splash-title">SNAKE</div>
-  <div class="splash-line"></div>
-  <div class="splash-made">Created by</div>
-  <div class="splash-name">Abid Hossain</div>
-  <div class="splash-tap">TAP TO CONTINUE</div>
-</div>
+    <section class="hero-section min-h-screen flex items-center justify-center px-6">
+        <div class="text-center animate__animated animate__fadeIn">
+            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 neon-text text-blue-400">NEXT GEN ACADEMY</h1>
+            <p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-10">
+                তথ্যপ্রযুক্তির আলোয় গড়া আমাদের ক্যাম্পাস। আমরা শিক্ষার্থীদের শুধু শিক্ষিত নয়, আগামীর চ্যালেঞ্জ মোকাবিলায় দক্ষ করে তুলি।
+            </p>
+            <div class="flex gap-4 justify-center">
+                <a href="#form" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg shadow-blue-500/50">এখনই আবেদন করো</a>
+            </div>
+        </div>
+    </section>
 
-<h1>🐍 SNAKE</h1>
-<div class="score-row">
-  <div class="score-box"><div class="label">SCORE</div><div class="val" id="score">0</div></div>
-  <div class="score-box"><div class="label">BEST</div><div class="val" id="best">0</div></div>
-  <div class="score-box"><div class="label">LEVEL</div><div class="val" id="level">1</div></div>
-</div>
+    <section class="py-20 px-6 container mx-auto">
+        <h2 class="text-3xl font-bold text-center mb-12 text-blue-300">আমাদের বিশেষত্ব</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="glass-card p-8 rounded-2xl text-center">
+                <div class="text-4xl mb-4">🚀</div>
+                <h3 class="text-xl font-bold mb-2">স্মার্ট লার্নিং</h3>
+                <p class="text-gray-400 text-sm">VR এবং AR প্রযুক্তির মাধ্যমে পড়াশোনা।</p>
+            </div>
+            <div class="glass-card p-8 rounded-2xl text-center">
+                <div class="text-4xl mb-4">🤖</div>
+                <h3 class="text-xl font-bold mb-2">রোবোটিক্স ক্লাব</h3>
+                <p class="text-gray-400 text-sm">সব শিক্ষার্থীর জন্য রোবোটিক্স শেখার সুযোগ।</p>
+            </div>
+            <div class="glass-card p-8 rounded-2xl text-center">
+                <div class="text-4xl mb-4">🌐</div>
+                <h3 class="text-xl font-bold mb-2">গ্লোবাল স্কিল</h3>
+                <p class="text-gray-400 text-sm">কোডিং এবং সাইবার সিকিউরিটি কোর্স।</p>
+            </div>
+        </div>
+    </section>
 
-<button class="dl-btn" onclick="downloadGame()">⬇ ডাউনলোড করো</button>
-<br>
+    <section id="form" class="py-20 px-6">
+        <div class="max-w-md mx-auto glass-card p-8 rounded-3xl border-t-4 border-blue-500">
+            <h2 class="text-2xl font-bold text-center mb-8">ভর্তি আবেদন ফরম</h2>
+            <form class="space-y-5">
+                <input type="text" placeholder="শিক্ষার্থীর পুরো নাম" class="w-full bg-gray-800/50 border border-gray-700 p-4 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                <input type="email" placeholder="ইমেইল (যদি থাকে)" class="w-full bg-gray-800/50 border border-gray-700 p-4 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                <select class="w-full bg-gray-800 border border-gray-700 p-4 rounded-xl outline-none">
+                    <option>শ্রেণি নির্বাচন করুন</option>
+                    <option>ষষ্ঠ শ্রেণি</option>
+                    <option>নবম শ্রেণি</option>
+                </select>
+                <button class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 py-4 rounded-xl font-bold hover:opacity-90 transition">সাবমিট করুন</button>
+            </form>
+        </div>
+    </section>
 
-<div class="canvas-wrap">
-  <canvas id="c" width="320" height="320"></canvas>
+    <footer class="py-8 text-center text-gray-500 text-sm">
+        <p>© ২০২৬ নেক্সট জেন একাডেমি | ঢাকা, বাংলাদেশ</p>
+    </footer>
 
-  <div class="dpad">
-    <button class="up"    id="u">▲</button>
-    <button class="left"  id="l">◀</button>
-    <button class="down"  id="d">▼</button>
-    <button class="right" id="r">▶</button>
-  </div>
-
-  <div class="overlay" id="overlay">
-    <h2 id="ov-title">🐍 SNAKE</h2>
-    <p id="ov-msg">বোতাম চাপো বা ট্যাপ করো<br>লাল বল খেয়ে বড় হও 🔴<br>দেয়াল ছুঁলে গেম ওভার!</p>
-    <div class="final" id="ov-score" style="display:none">স্কোর: <span id="final-score">0</span></div>
-    <button class="play-btn" id="play-btn">▶ শুরু করো</button>
-  </div>
-</div>
-
-<script>
-  const canvas = document.getElementById('c');
-  const ctx = canvas.getContext('2d');
-  const GRID = 16, CELL = canvas.width / GRID;
-  let snake, dir, nextDir, food, score, best=0, level;
-  let loopId=null, running=false;
-  const $=id=>document.getElementById(id);
-
-  function initGame() {
-    snake=[{x:8,y:8},{x:7,y:8},{x:6,y:8}];
-    dir={x:1,y:0}; nextDir={x:1,y:0};
-    score=0; level=1; placeFood(); updateHUD();
-  }
-
-  function placeFood() {
-    let f;
-    do { f={x:Math.floor(Math.random()*GRID),y:Math.floor(Math.random()*GRID)}; }
-    while(snake.some(s=>s.x===f.x&&s.y===f.y));
-    food=f;
-  }
-
-  function getDelay(){ return Math.max(150,350-(level-1)*25); }
-
-  function startGame(){
-    $('overlay').style.display='none';
-    initGame(); running=true; clearTimeout(loopId); step();
-  }
-
-  function step(){ if(!running)return; tick(); loopId=setTimeout(step,getDelay()); }
-
-  function tick(){
-    dir={...nextDir};
-    const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
-    if(head.x<0||head.x>=GRID||head.y<0||head.y>=GRID||snake.some(s=>s.x===head.x&&s.y===head.y)){
-      gameOver(); return;
-    }
-    snake.unshift(head);
-    if(head.x===food.x&&head.y===food.y){
-      score+=10*level; if(score>best)best=score;
-      placeFood();
-      const nl=Math.floor(score/80)+1; if(nl>level)level=nl;
-      updateHUD();
-    } else { snake.pop(); }
-    draw();
-  }
-
-  function draw(){
-    ctx.fillStyle='#0f0f1a'; ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.strokeStyle='rgba(255,255,255,0.03)'; ctx.lineWidth=0.5;
-    for(let i=0;i<=GRID;i++){
-      ctx.beginPath(); ctx.moveTo(i*CELL,0); ctx.lineTo(i*CELL,canvas.height); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(0,i*CELL); ctx.lineTo(canvas.width,i*CELL); ctx.stroke();
-    }
-    // food
-    const fcx=food.x*CELL+CELL/2,fcy=food.y*CELL+CELL/2,fr=CELL/2-3;
-    ctx.save(); ctx.shadowColor='#ff4466'; ctx.shadowBlur=14; ctx.fillStyle='#ff4466';
-    ctx.beginPath(); ctx.arc(fcx,fcy,fr,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle='rgba(255,255,255,0.35)';
-    ctx.beginPath(); ctx.arc(fcx-fr*0.25,fcy-fr*0.3,fr*0.32,0,Math.PI*2); ctx.fill();
-    ctx.restore();
-    // snake
-    snake.forEach((seg,i)=>{
-      const x=seg.x*CELL+2,y=seg.y*CELL+2,s=CELL-4,ratio=1-i/snake.length;
-      ctx.save();
-      if(i===0){ctx.shadowColor='#00ff88';ctx.shadowBlur=14;ctx.fillStyle='#00ff88';}
-      else{ctx.fillStyle=`rgb(0,${Math.floor(160*ratio+50)},${Math.floor(80*ratio+20)})`;}
-      ctx.beginPath(); ctx.roundRect(x,y,s,s,4); ctx.fill(); ctx.restore();
-    });
-    // eyes
-    const h=snake[0],ex=h.x*CELL,ey=h.y*CELL;
-    ctx.fillStyle='#1a1a2e';
-    if(dir.x===1) {eye(ex+CELL-7,ey+5);eye(ex+CELL-7,ey+CELL-9);}
-    if(dir.x===-1){eye(ex+4,ey+5);eye(ex+4,ey+CELL-9);}
-    if(dir.y===-1){eye(ex+5,ey+4);eye(ex+CELL-9,ey+4);}
-    if(dir.y===1) {eye(ex+5,ey+CELL-7);eye(ex+CELL-9,ey+CELL-7);}
-  }
-
-  function eye(x,y){ctx.beginPath();ctx.arc(x+2,y+2,2.5,0,Math.PI*2);ctx.fill();}
-
-  function gameOver(){
-    running=false; clearTimeout(loopId);
-    $('ov-title').textContent='💀 গেম ওভার';
-    $('ov-msg').textContent='আবার চেষ্টা করো!';
-    $('ov-score').style.display='block';
-    $('final-score').textContent=score;
-    $('play-btn').textContent='↺ আবার খেলো';
-    $('overlay').style.display='flex'; updateHUD();
-  }
-
-  function updateHUD(){$('score').textContent=score;$('best').textContent=best;$('level').textContent=level;}
-
-  function changeDir(d){
-    const map={U:{x:0,y:-1},D:{x:0,y:1},L:{x:-1,y:0},R:{x:1,y:0}};
-    const nd=map[d];
-    if(nd.x!== -dir.x||nd.y!== -dir.y) nextDir={...nd};
-  }
-
-  // Keyboard
-  document.addEventListener('keydown',e=>{
-    if(!running&&(e.key===' '||e.key==='Enter')){startGame();return;}
-    const k={ArrowUp:'U',ArrowDown:'D',ArrowLeft:'L',ArrowRight:'R',w:'U',s:'D',a:'L',d:'R',W:'U',S:'D',A:'L',D:'R'};
-    if(k[e.key]){e.preventDefault();changeDir(k[e.key]);}
-  });
-
-  // Play button
-  $('play-btn').addEventListener('click',startGame);
-  $('play-btn').addEventListener('touchstart',e=>{e.preventDefault();startGame();},{passive:false});
-
-  // D-Pad
-  function bindBtn(id,dirCode){
-    const btn=$(id);
-    function press(e){
-      e.stopPropagation();
-      if(e.cancelable)e.preventDefault();
-      if(!running)startGame();
-      else{
-        changeDir(dirCode);
-        btn.classList.add('flash');
-        setTimeout(()=>btn.classList.remove('flash'),150);
-      }
-    }
-    btn.addEventListener('touchstart',press,{passive:false});
-    btn.addEventListener('click',press);
-  }
-  bindBtn('u','U');bindBtn('d','D');bindBtn('l','L');bindBtn('r','R');
-
-  // Canvas tap
-  function tapMove(clientX,clientY){
-    if(!running){startGame();return;}
-    const rect=canvas.getBoundingClientRect();
-    const scaleX=canvas.width/rect.width,scaleY=canvas.height/rect.height;
-    const tapX=(clientX-rect.left)*scaleX,tapY=(clientY-rect.top)*scaleY;
-    const headX=snake[0].x*CELL+CELL/2,headY=snake[0].y*CELL+CELL/2;
-    const dx=tapX-headX,dy=tapY-headY;
-    changeDir(Math.abs(dx)>Math.abs(dy)?(dx>0?'R':'L'):(dy>0?'D':'U'));
-  }
-
-  canvas.addEventListener('touchstart',e=>{e.preventDefault();tapMove(e.touches[0].clientX,e.touches[0].clientY);},{passive:false});
-  canvas.addEventListener('click',e=>{tapMove(e.clientX,e.clientY);});
-
-  ctx.fillStyle='#0f0f1a';ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  // Splash screen dismiss
-  const splash = document.getElementById('splash');
-  function dismissSplash() {
-    splash.classList.add('splash-out');
-    setTimeout(() => splash.style.display='none', 500);
-    splash.removeEventListener('click', dismissSplash);
-    splash.removeEventListener('touchstart', dismissSplash, {passive:true});
-  }
-  splash.addEventListener('click', dismissSplash);
-  splash.addEventListener('touchstart', dismissSplash, {passive:true});
-
-  function downloadGame() {
-    const html = document.documentElement.outerHTML;
-    const blob = new Blob([html], {type: 'text/html'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'index.html';
-    a.click();
-    URL.revokeObjectURL(a.href);
-  }
-</script>
 </body>
 </html>
