@@ -1,81 +1,159 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ভবিষ্যতের স্মার্ট স্কুল</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <title>Snake Game</title>
     <style>
-        body { background-color: #050b18; }
-        .hero-section {
-            background: linear-gradient(to bottom, rgba(5, 11, 24, 0.7), #050b18),
-                        url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #2c3e50;
+            color: white;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
         }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        canvas {
+            border: 5px solid #ecf0f1;
+            background-color: #000;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            max-width: 90vw;
+            max-height: 70vh;
         }
-        .neon-text { text-shadow: 0 0 10px #60a5fa, 0 0 20px #60a5fa; }
+        .score-board {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .controls {
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            gap: 10px;
+        }
+        .btn {
+            width: 60px;
+            height: 60px;
+            background: #34495e;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .btn:active { background: #1abc9c; }
+        .up { grid-column: 2; }
+        .left { grid-column: 1; }
+        .down { grid-column: 2; }
+        .right { grid-column: 3; }
     </style>
 </head>
-<body class="text-gray-200">
+<body>
 
-    <section class="hero-section min-h-screen flex items-center justify-center px-6">
-        <div class="text-center animate__animated animate__fadeIn">
-            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 neon-text text-blue-400">NEXT GEN ACADEMY</h1>
-            <p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-10">
-                তথ্যপ্রযুক্তির আলোয় গড়া আমাদের ক্যাম্পাস। আমরা শিক্ষার্থীদের শুধু শিক্ষিত নয়, আগামীর চ্যালেঞ্জ মোকাবিলায় দক্ষ করে তুলি।
-            </p>
-            <div class="flex gap-4 justify-center">
-                <a href="#form" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg shadow-blue-500/50">এখনই আবেদন করো</a>
-            </div>
-        </div>
-    </section>
+    <div class="score-board">Score: <span id="score">0</span></div>
+    <canvas id="snakeGame" width="400" height="400"></canvas>
 
-    <section class="py-20 px-6 container mx-auto">
-        <h2 class="text-3xl font-bold text-center mb-12 text-blue-300">আমাদের বিশেষত্ব</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="glass-card p-8 rounded-2xl text-center">
-                <div class="text-4xl mb-4">🚀</div>
-                <h3 class="text-xl font-bold mb-2">স্মার্ট লার্নিং</h3>
-                <p class="text-gray-400 text-sm">VR এবং AR প্রযুক্তির মাধ্যমে পড়াশোনা।</p>
-            </div>
-            <div class="glass-card p-8 rounded-2xl text-center">
-                <div class="text-4xl mb-4">🤖</div>
-                <h3 class="text-xl font-bold mb-2">রোবোটিক্স ক্লাব</h3>
-                <p class="text-gray-400 text-sm">সব শিক্ষার্থীর জন্য রোবোটিক্স শেখার সুযোগ।</p>
-            </div>
-            <div class="glass-card p-8 rounded-2xl text-center">
-                <div class="text-4xl mb-4">🌐</div>
-                <h3 class="text-xl font-bold mb-2">গ্লোবাল স্কিল</h3>
-                <p class="text-gray-400 text-sm">কোডিং এবং সাইবার সিকিউরিটি কোর্স।</p>
-            </div>
-        </div>
-    </section>
+    <!-- মোবাইল কন্ট্রোল বাটন -->
+    <div class="controls">
+        <button class="btn up" onclick="changeDirection('UP')">↑</button>
+        <button class="btn left" onclick="changeDirection('LEFT')">←</button>
+        <button class="btn down" onclick="changeDirection('DOWN')">↓</button>
+        <button class="btn right" onclick="changeDirection('RIGHT')">→</button>
+    </div>
 
-    <section id="form" class="py-20 px-6">
-        <div class="max-w-md mx-auto glass-card p-8 rounded-3xl border-t-4 border-blue-500">
-            <h2 class="text-2xl font-bold text-center mb-8">ভর্তি আবেদন ফরম</h2>
-            <form class="space-y-5">
-                <input type="text" placeholder="শিক্ষার্থীর পুরো নাম" class="w-full bg-gray-800/50 border border-gray-700 p-4 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-                <input type="email" placeholder="ইমেইল (যদি থাকে)" class="w-full bg-gray-800/50 border border-gray-700 p-4 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-                <select class="w-full bg-gray-800 border border-gray-700 p-4 rounded-xl outline-none">
-                    <option>শ্রেণি নির্বাচন করুন</option>
-                    <option>ষষ্ঠ শ্রেণি</option>
-                    <option>নবম শ্রেণি</option>
-                </select>
-                <button class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 py-4 rounded-xl font-bold hover:opacity-90 transition">সাবমিট করুন</button>
-            </form>
-        </div>
-    </section>
+    <script>
+        const canvas = document.getElementById("snakeGame");
+        const ctx = canvas.getContext("2d");
+        const scoreElement = document.getElementById("score");
 
-    <footer class="py-8 text-center text-gray-500 text-sm">
-        <p>© ২০২৬ নেক্সট জেন একাডেমি | ঢাকা, বাংলাদেশ</p>
-    </footer>
+        const box = 20;
+        let score = 0;
+        let gameSpeed = 150;
 
+        let snake = [{ x: 9 * box, y: 10 * box }];
+        let food = {
+            x: Math.floor(Math.random() * 19 + 1) * box,
+            y: Math.floor(Math.random() * 19 + 1) * box
+        };
+
+        let d;
+
+        document.addEventListener("keydown", direction);
+
+        function direction(event) {
+            if(event.keyCode == 37 && d != "RIGHT") d = "LEFT";
+            else if(event.keyCode == 38 && d != "DOWN") d = "UP";
+            else if(event.keyCode == 39 && d != "LEFT") d = "RIGHT";
+            else if(event.keyCode == 40 && d != "UP") d = "DOWN";
+        }
+
+        function changeDirection(newDir) {
+            if(newDir == "LEFT" && d != "RIGHT") d = "LEFT";
+            if(newDir == "UP" && d != "DOWN") d = "UP";
+            if(newDir == "RIGHT" && d != "LEFT") d = "RIGHT";
+            if(newDir == "DOWN" && d != "UP") d = "DOWN";
+        }
+
+        function collision(head, array) {
+            for(let i = 0; i < array.length; i++) {
+                if(head.x == array[i].x && head.y == array[i].y) return true;
+            }
+            return false;
+        }
+
+        function draw() {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for(let i = 0; i < snake.length; i++) {
+                ctx.fillStyle = (i == 0) ? "#1abc9c" : "#2ecc71";
+                ctx.fillRect(snake[i].x, snake[i].y, box, box);
+                ctx.strokeStyle = "black";
+                ctx.strokeRect(snake[i].x, snake[i].y, box, box);
+            }
+
+            ctx.fillStyle = "#e74c3c";
+            ctx.fillRect(food.x, food.y, box, box);
+
+            let snakeX = snake[0].x;
+            let snakeY = snake[0].y;
+
+            if( d == "LEFT") snakeX -= box;
+            if( d == "UP") snakeY -= box;
+            if( d == "RIGHT") snakeX += box;
+            if( d == "DOWN") snakeY += box;
+
+            if(snakeX == food.x && snakeY == food.y) {
+                score++;
+                scoreElement.innerHTML = score;
+                food = {
+                    x: Math.floor(Math.random() * 19 + 1) * box,
+                    y: Math.floor(Math.random() * 19 + 1) * box
+                };
+            } else {
+                snake.pop();
+            }
+
+            let newHead = { x: snakeX, y: snakeY };
+
+            if(snakeX < 0 || snakeX >= canvas.width || snakeY < 0 || snakeY >= canvas.height || collision(newHead, snake)) {
+                clearInterval(game);
+                alert("Game Over! Your Score: " + score);
+                location.reload(); 
+            }
+
+            snake.unshift(newHead);
+        }
+
+        let game = setInterval(draw, gameSpeed);
+    </script>
 </body>
 </html>
